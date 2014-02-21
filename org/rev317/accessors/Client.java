@@ -1,8 +1,14 @@
 package org.rev317.accessors;
 
 public interface Client extends RSApplet {
-
+	
+	public int getRunEnergy();
+	
 	public String getUsername();
+	
+	public String getPassword();
+	
+	public int[] getSettings();
 
 	public Player getLocalPlayer();
 
