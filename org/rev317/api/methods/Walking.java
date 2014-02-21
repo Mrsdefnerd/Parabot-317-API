@@ -1,6 +1,8 @@
 package org.rev317.api.methods;
 
 import org.rev317.accessors.Client;
+import org.rev317.api.sleep.Condition;
+import org.rev317.api.sleep.Sleep;
 import org.rev317.api.wrappers.scene.Tile;
 import org.rev317.Loader;
 
@@ -58,6 +60,49 @@ public final class Walking {
 	 */
 	public static final boolean readyForNextTile() {
 		return !isMoving() || !isDestinationSet() || getDestination().distanceTo() < 5;
+	}
+	
+	public static void walkPath(final Tile[] tiles, boolean reverse) {
+		Tile tile = null;
+		if (reverse) {
+			for (int i = tiles.length - 1; i >= 0; i--)
+				if (tiles[i].isOnMinimap()) {
+					tile = tiles[i];
+					break;
+				}
+		} else {
+			for (int i = 0; i < tiles.length; i++)
+				if (tiles[i].isOnMinimap()) {
+					tile = tiles[i];
+					break;
+				}
+		}
+		tile.clickMM();
+		final Tile currentTile = tile;
+		if (currentTile != null)
+			Sleep.sleep(new Condition() {
+	
+				@Override
+				public boolean validate() {
+					return currentTile.distanceTo() > 5;
+				}
+				
+			}, 2000);
+	}
+	
+	public static final boolean pathVisible(Tile[] tile) {
+		for (Tile t : tile)
+			if (t.isOnMinimap())
+				return true;
+		return false;
+	}
+	
+	public static final boolean isRunActivated() {
+		return Settings.getInstance().getSetting(173) == 0;
+	}
+	
+	public static final int getRunEnergy() {
+		return Loader.getClient().getRunEnergy();
 	}
 
 }

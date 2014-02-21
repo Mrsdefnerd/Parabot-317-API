@@ -8,10 +8,11 @@ import org.rev317.api.interfaces.Locatable;
 import org.rev317.api.methods.Calculations;
 import org.rev317.api.methods.Game;
 import org.rev317.api.methods.Menu;
-import org.rev317.api.wrappers.defs.ItemDef;
+import org.rev317.api.wrappers.defs.hardcoded.ItemDef;
 import org.rev317.api.wrappers.renderable.GroundItemModel;
 import org.rev317.api.wrappers.renderable.Model;
 import org.rev317.Loader;
+
 
 /**
  * 
@@ -61,6 +62,10 @@ public final class GroundItem implements Locatable, Interactable {
 		return new Tile(client.getBaseX() + getLocalRegionX(),
 				client.getBaseY() + getLocalRegionY(), client.getPlane());
 	}
+	
+	public String getName() {
+		return ItemDef.getItemName(getId());
+	}
 
 	/**
 	 * Calculates center point on screen of this grounditem
@@ -89,14 +94,7 @@ public final class GroundItem implements Locatable, Interactable {
 	public final int getId() {
 		return this.accessor.getId();
 	}
-	
-	/**
-	 * Gets item's definition
-	 * @return item's definition
-	 */
-	public final ItemDef getDef() {
-		return ItemDef.get(this.accessor.getId());
-	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -123,12 +121,13 @@ public final class GroundItem implements Locatable, Interactable {
 
 	/**
 	 * {@inheritDoc}
-	 */
+	 */	
 	public final boolean interact(String action) {
-		final Model model = getModel();
-		final Point a = (model == null) ? getCenterPointOnScreen() : model.getCentralPoint();
+		org.rev317.api.wrappers.renderable.Model model = getModel();
+		Point a = model == null ? getCenterPointOnScreen() : model
+				.getCentralPoint();
 		Menu.interact(action, a);
-		return Game.getCrosshairType() == Game.CROSSHAIR_TYPE_RED;
+		return Game.getCrosshairType() == 2;
 	}
 	
 	/**
@@ -139,10 +138,7 @@ public final class GroundItem implements Locatable, Interactable {
 	 */
 	public final boolean take() {
 		StringBuilder b = new StringBuilder("Take");
-		ItemDef def;
-		if((def = this.getDef()) != null) {
-			b.append(" ").append(def.getName());
-		}
+		b.append(" ").append(getName());
 		return this.interact(b.toString());
 	}
 

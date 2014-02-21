@@ -82,6 +82,10 @@ public final class Tile {
 	public final int distanceTo() {
 		return (int) Calculations.distanceTo(this);
 	}
+	
+	public final int distanceTo(Tile tile) {
+		return (int) Calculations.distanceBetween(tile, this);
+	}
 
 	/**
 	 * Clicks this tile on minimap

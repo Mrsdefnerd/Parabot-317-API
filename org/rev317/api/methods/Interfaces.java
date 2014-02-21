@@ -157,7 +157,17 @@ public final class Interfaces {
 			return childId;
 		}
 		return parents.get(childId);
-
+	}
+	
+	
+	public static final Interface getInterfaceByText(boolean visible, String ... texts) {
+		for (String text : texts)
+			for (Interface i : Interfaces.getParentInterfaces())
+				if (i != null && i.getChildren() != null)
+					for (Interface c : i.getChildren())
+						if (c != null && c.getText() != null && c.getText().toLowerCase().contains(text.toLowerCase()) && (visible ? c.isVisible() : true))
+							return c;
+		return null;
 	}
 
 }

@@ -64,6 +64,33 @@ public final class SceneObjects {
 	}
 	
 	/**
+	 * Gets the most important scene object in game which can be interacted with, filters out: 'walls, wall decorations, ground decorations'
+	 * @return scene object
+	 */
+	public static final SceneObject getNearestObject(Filter<SceneObject> filter) {
+		ArrayList<SceneObject> sceneObjects = new ArrayList<SceneObject>();
+		if(client == null) {
+			client = Loader.getClient();
+		}
+		scene = client.getScene();
+		sceneTiles = scene.getSceneTiles()[client.getPlane()];
+		for(int x = 0; x < 104; x++) {
+			for(int y = 0; y < 104; y++) {
+				final SceneObject sceneObjectAtTile = getSceneObjectAtTile(x, y, true);
+				if(sceneObjectAtTile != null && filter.accept(sceneObjectAtTile)) {
+					sceneObjects.add(sceneObjectAtTile);
+				}
+				
+			}
+		}
+		if (sceneObjects.size() == 0)
+			return null;
+		SceneObject[] objects = sceneObjects.toArray(new SceneObject[sceneObjects.size()]);
+		Arrays.sort(objects, NEAREST_SORTER);
+		return objects[0];
+	}
+	
+	/**
 	 * Gets the most important scene objects in game which can be interacted with
 	 * @return scene objects
 	 */
@@ -97,6 +124,27 @@ public final class SceneObjects {
 	 */
 	public static final SceneObject[] getNearest(final int... ids) {
 		return getNearest(new Filter<SceneObject>() {
+
+			@Override
+			public boolean accept(SceneObject object) {
+				for(final int id : ids) {
+					if(id == object.getId()) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+		});
+	}
+	
+	/**
+	 * Returns nearest object with given id
+	 * @param ids
+	 * @return sceneobject
+	 */
+	public static final SceneObject getNearestObject(final int... ids) {
+		return getNearestObject(new Filter<SceneObject>() {
 
 			@Override
 			public boolean accept(SceneObject object) {

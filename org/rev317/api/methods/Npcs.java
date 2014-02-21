@@ -59,6 +59,33 @@ public final class Npcs {
 	}
 	
 	/**
+	 * Gets all Npcs except local Npc
+	 * @param filter
+	 * @return all Npcs
+	 */
+	public static final Npc getNearestNpc(final Filter<Npc> filter) {
+		final Client client = Loader.getClient();
+		final int[] NpcIndices = client.getNpcIndices();
+		ArrayList<Npc> npcList = new ArrayList<Npc>();
+		final org.rev317.accessors.Npc[] accNpcs = client.getNpcs(); 
+		for(int i = 0; i < NpcIndices.length; i++) {
+			final int NpcIndex = NpcIndices[i];
+			if(accNpcs[NpcIndex] == null) {
+				continue;
+			}
+			final Npc npc = new Npc(accNpcs[NpcIndex]);
+			if(filter.accept(npc)) {
+				npcList.add(npc);
+			}
+		}
+		if (npcList.size() == 0)
+			return null;
+		Npc[] npcs = npcList.toArray(new Npc[npcList.size()]);
+		Arrays.sort(npcs, NEAREST_SORTER);
+		return npcs[0];
+	}
+	
+	/**
 	 * Gets all Npcs
 	 * @return all Npcs
 	 */
@@ -98,6 +125,48 @@ public final class Npcs {
 		});
 		Arrays.sort(npcs, NEAREST_SORTER);
 		return npcs;
+	}
+	
+	/**
+	 * Gets nearest npcs which hold given id(s)
+	 * @param ids
+	 * @return the nearest npc
+	 */
+	public static final Npc getNearestNpc(final int ... ids) {
+		return getNearestNpc(new Filter<Npc>() {
+
+			@Override
+			public boolean accept(Npc npc) {
+				for(final int id : ids) {
+					if(id == npc.getDef().getId()) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+		});
+	}
+	
+	/**
+	 * Gets nearest npcs which hold given name(s)
+	 * @param names
+	 * @return the nearest npc
+	 */
+	public static final Npc getNearestNpc(final String ... names) {
+		return getNearestNpc(new Filter<Npc>() {
+
+			@Override
+			public boolean accept(Npc npc) {
+				for(final String name : names) {
+					if(npc.getName().toLowerCase().equals(name.toLowerCase())) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+		});
 	}
 	
 	/**
