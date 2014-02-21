@@ -326,5 +326,9 @@ public class Bank {
     public static boolean isOpen() {
         return Loader.getClient().getOpenInterfaceId() == 23350;
     }
+    
+    public static boolean isNoting() {
+		return Settings.getInstance().getSetting(115) == 1;
+	}
 
 }
